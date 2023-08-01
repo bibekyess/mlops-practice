@@ -13,10 +13,6 @@ spec:
       labels:
         app: mlflow-deployment
     spec:
-      volumes:
-        - name: mlflow-pvc
-          persistentVolumeClaim:
-            claimName: mlflow-pvc
       containers:
       - name: mlflow-deployment
         image: bibekyess/mlops-practice-mlflow:v1 # FIXME: Change with your docker-hub-username/repo-name:tag
@@ -27,6 +23,9 @@ spec:
         - --backend-store-uri=/opt/mlflow/backend/
         - --default-artifact-root=/opt/mlflow/artifacts/
         - --workers=2
+        # Can also do this: (`--` seperates the command line arguments and is a common convention in docker container)
+          # args: ["--host=0.0.0.0", "--port=5000", "--backend-store-uri=/opt/mlflow/backend/", "--default-artifact-root=/opt/mlflow/artifacts/", "--workers=2"]
+
         ports:
         - name: http
           containerPort: 5000
@@ -34,3 +33,7 @@ spec:
         volumeMounts:
         - name: mlflow-pvc
           mountPath: /opt/mlflow/
+      volumes:
+        - name: mlflow-pvc
+          persistentVolumeClaim:
+            claimName: mlflow-pvc
