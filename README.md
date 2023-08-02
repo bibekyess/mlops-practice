@@ -37,3 +37,11 @@ sudo nano /etc/hosts
 # <Minikube-IP> mlflow-server.local
 ```
 Visit http://mlflow-server.local in your web browser, and you will have the MLflow server running on the Kubernetes cluster.
+
+
+Instead of pulling the image from the docker hub, you can instead load the docker image in the minikube docker daemon and then run container from there. `mlflow-server.yaml` contains the code for that and to run this:
+```bash
+minikube image load image-name:tag
+minikube image list # Make sure you see docker.io/image-name:tag in here
+kubectl apply -f mlflow-server.yaml
+```
