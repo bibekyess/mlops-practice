@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: mlflow-server.local
+  - host: local-server
     http:
       paths:
       - path: /

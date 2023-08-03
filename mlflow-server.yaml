@@ -1,3 +1,16 @@
+# mlflow-pvc
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mlflow-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+
 # mlflow-pv
 apiVersion: v1
 kind: PersistentVolume
@@ -12,19 +25,6 @@ spec:
     path: /data/mlflow
 ---
 
-# mlflow-pvc
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: mlflow-pvc
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 2Gi
----
-
 # deployment
 apiVersion: apps/v1
 kind: Deployment
@@ -34,15 +34,15 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mlflow-deployment
+      app: mlflow-app
   template:
     metadata:
       labels:
-        app: mlflow-deployment
+        app: mlflow-app
     spec:
       containers:
-      - name: mlflow-deployment
-        image: bibekyess/mlops-practice-mlflow:v1 # FIXME: Change with your docker-hub-username/repo-name:tag
+      - name: mlflow-app
+        image: bibekyess/mlops-practice-mlflow:v2 # FIXME: Change with your docker-hub-username/repo-name:tag
         imagePullPolicy: Never
         args:
         - --host=0.0.0.0
@@ -73,7 +73,7 @@ metadata:
   name: mlflow-service
 spec:
   selector:
-    app: mlflow-deployment
+    app: mlflow-app
   ports:
     - protocol: TCP
       port: 5000
@@ -91,7 +91,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: mlflow-server.local
+  - host: local-server
     http:
       paths:
       - path: /

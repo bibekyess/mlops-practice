@@ -4,7 +4,7 @@ metadata:
   name: mlflow-service
 spec:
   selector:
-    app: mlflow-deployment
+    app: mlflow-app
   ports:
     - protocol: TCP
       port: 5000

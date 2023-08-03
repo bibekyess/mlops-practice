@@ -17,6 +17,7 @@ docker push docker-hub-username/repo-name:tag
 ## Kubernetes Deployment
 
 ```bash
+# Go inside the configs folder
 # Create the PersistentVolume(PV) and PersistentVolumeChain(PVC)
 kubectl apply -f mlflow-pv.yaml
 kubectl apply -f mlflow-pvc.yaml
@@ -30,13 +31,19 @@ minikube addons enable ingress
 kubectl apply -f ingress.yaml
 ```
 ```bash
+# Another alternative to do quickly is:
+minikube addons enable ingress
+kubectl apply -f . # If you are inside configs folder
+kubectl apply -f configs # If you are on the root directory
+```
+```bash
 # Get the MInikube IP and edit the host file for custom domain:
 minikube ip # Copy to Clipboard
 sudo nano /etc/hosts
 # Add the following line at the end of the file:
-# <Minikube-IP> mlflow-server.local
+# <Minikube-IP> local-server
 ```
-Visit http://mlflow-server.local in your web browser, and you will have the MLflow server running on the Kubernetes cluster.
+Visit http://local-server in your web browser, and you will have the MLflow server running on the Kubernetes cluster.
 
 
 Instead of pulling the image from the docker hub, you can instead load the docker image in the minikube docker daemon and then run container from there. `mlflow-server.yaml` contains the code for that and to run this:

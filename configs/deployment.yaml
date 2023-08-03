@@ -7,14 +7,14 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mlflow-deployment
+      app: mlflow-app
   template:
     metadata:
       labels:
-        app: mlflow-deployment
+        app: mlflow-app
     spec:
       containers:
-      - name: mlflow-deployment
+      - name: mlflow-app
         image: bibekyess/mlops-practice-mlflow:v1 # FIXME: Change with your docker-hub-username/repo-name:tag
         imagePullPolicy: Always
         args:
