@@ -52,3 +52,14 @@ minikube image load image-name:tag
 minikube image list # Make sure you see docker.io/image-name:tag in here
 kubectl apply -f mlflow-server.yaml
 ```
+
+### Tracking Inference details with the MLFlow server
+Go inside huggingface-gpt2
+```bash
+# Build the image
+docker build -t fastapi-mlflow-v1 .
+minikube image load fastapi-mlflow-v1
+kubectl apply -f gpt2.yaml
+```
+Go to `http://local-server/fastapi` and you can see the application run. To access the FastAPI swagger UI, go to `http://local-server/fastapi/docs` and then go to `POST` and click on `Try it out`. Then give the input and you can see the output correspondingly on the UI interface.
+Then go to `http://local-server` to access the MLFlow UI and get information about the tracked details about each runs.
