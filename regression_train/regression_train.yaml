@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: train-job
+spec:
+  template:
+    spec:
+      restartPolicy: Never # Job does not restart incase of failure
+      volumes:
+      - name: mlflow-pvc
+        persistentVolumeClaim:
+          claimName: mlflow-pvc
+      containers:
+      - name: regression-train-container
+        image: regression_train:v1
+        volumeMounts:
+        - name: mlflow-pvc  # Mount the same PVC used by MLflow deployment
+          mountPath: /opt/mlflow/ # Use the desired mount path inside the container to access artifacts
+  backoffLimit: 0 # prevent retries in case of failure
