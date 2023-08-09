@@ -1,0 +1,6 @@
+namespace: dev
+
+configmap:
+  data:
+    CUSTOM_HEADER: "This app is deployed with helm in development server"
+

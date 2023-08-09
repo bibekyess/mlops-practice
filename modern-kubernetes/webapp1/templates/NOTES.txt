@@ -1,0 +1,4 @@
+I can give any additional information from here.
+To do port-forwarding, use this command:
+kubectl port-forward service/<service-name> 8888:80 --namespace {{.Values.namespace}}
+# Access it from localhost:8888 and enjoy
