@@ -8,9 +8,9 @@ from math import sqrt
 from mlflow.client import MlflowClient
 import time
 
-mlflow.set_tracking_uri("http://local-server/")
+# mlflow.set_tracking_uri("http://local-server/")
 # Set the experiment name to an experiment in the shared experiments folder
-mlflow.set_experiment("diabetes_regression_task")
+mlflow.set_experiment("test")
 
 client = MlflowClient()
 
@@ -29,7 +29,7 @@ with mlflow.start_run() as run:
     diabetes_y = diabetes.target
     diabetes_X_train, diabetes_X_test, diabetes_y_train, diabetes_y_test = train_test_split(diabetes_X, diabetes_y, test_size=0.25, random_state=42)
 
-    alpha = 0.8
+    alpha = 0.05
     solver = 'cholesky'
 
     # Log parameters

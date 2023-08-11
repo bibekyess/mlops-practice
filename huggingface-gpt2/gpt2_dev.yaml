@@ -3,6 +3,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: gpt2-deployment
+  labels:
+    name: gpt2-app
+    env: dev
 spec:
   replicas: 1
   selector:
@@ -12,6 +15,7 @@ spec:
     metadata:
       labels:
         app: gpt2-app
+        env: dev
     spec:
       volumes:
       - name: mlflow-pvc
@@ -26,6 +30,14 @@ spec:
         volumeMounts:
         - name: mlflow-pvc
           mountPath: /opt/mlflow/
+        resources:
+          limits:
+            cpu: 2
+            memory: 2Gi
+          requests:
+            cpu: 2 
+            memory: 2Gi
+
 ---
 
 # service
@@ -33,6 +45,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: gpt2-service
+  labels:
+    app: gpt2-app
+    env: dev
 spec:
   selector:
     app: gpt2-app
@@ -48,10 +63,12 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: gpt2-ingress
+  labels:
+    app: gpt2-app
+    env: dev
   annotations:
     nginx.ingress.kubernetes.io/add-base-url: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2 # allows us to rewrite the path of incoming request before forwarding to the backend service
-
 spec:
   ingressClassName: nginx
   rules:

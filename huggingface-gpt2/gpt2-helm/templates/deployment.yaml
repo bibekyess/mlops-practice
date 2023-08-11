@@ -1,0 +1,33 @@
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deployment.name }}
+  labels:
+    {{- include "gpt2-labels" . | nindent 4 }}
+
+spec:
+  replicas: {{ .Values.app.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.app.name }}
+  template:
+    metadata:
+      labels:
+        {{- include "gpt2-labels" . | nindent 8 }}
+    spec:
+      volumes:
+      - name: mlflow-pvc
+        persistentVolumeClaim:
+          claimName: mlflow-pvc
+      containers:
+      - name: gpt2-container
+        image: {{ .Values.app.image.repository }}:{{ .Values.app.image.tag}}
+        imagePullPolicy: {{ .Values.app.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.app.containerPort }}
+        volumeMounts:
+        - name: mlflow-pvc
+          mountPath: /opt/mlflow/
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}

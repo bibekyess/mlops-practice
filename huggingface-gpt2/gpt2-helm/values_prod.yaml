@@ -1,0 +1,26 @@
+app:
+  replicaCount: 4
+  env: prod
+
+resources:
+  limits:
+    cpu: 4
+    memory: 4Gi
+  requests:
+    cpu: 4
+    memory: 4Gi
+
+ingress:
+  enabled: true
+  hosts:
+    host: local-server
+    paths:
+      path: /fastapi(/|$)(.*)
+      pathType: ImplementationSpecific
+
+autoscaling:
+  enabled: true
+  minReplicas: 4
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80

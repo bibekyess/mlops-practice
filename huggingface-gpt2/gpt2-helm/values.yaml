@@ -1,0 +1,38 @@
+app:
+  name: gpt2-app
+  replicaCount: 1
+  env: dev
+  image:
+    repository: fastapi-mlflow
+    tag: v1
+    pullPolicy: Never
+  containerPort: 8000
+
+resources:
+  limits:
+    cpu: 2
+    memory: 2Gi
+  requests:
+    cpu: 2
+    memory: 2Gi
+
+deployment:
+  name: gpt2-deployment
+  port: 8000
+
+service:
+  name: gpt2-service
+  type: LoadBalancer
+  port: 8000
+
+ingress:
+  enabled: true
+  hosts:
+    host: local-server
+    paths:
+      path: /fastapi(/|$)(.*)
+      pathType: ImplementationSpecific
+
+
+autoscaling:
+  enabled: false
