@@ -88,10 +88,19 @@ metadata:
   name: mlflow-ingress
   annotations:
     nginx.ingress.kubernetes.io/add-base-url: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-cluster-issuer
+    # cert-manager.io/privatekey-algorithm: RSA
+    # cert-manager.io/privatekey-encoding: PKCS1
+    # cert-manager.io/privatekey-rotationPolicy: Always
 spec:
+  # Add tls section
+  tls:
+    - hosts:
+        - "local-server.com"
+      secretName: local-server-tls
   ingressClassName: nginx
   rules:
-  - host: local-server
+  - host: local-server.com
     http:
       paths:
       - path: /
@@ -101,3 +110,23 @@ spec:
             name: mlflow-service
             port:
               number: 5000
+
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer # name of the resource
+metadata:
+  # we dont need a namespace for the ClusterIssuer resource
+  name: letsencrypt-cluster-issuer
+spec:
+  acme:
+    email: bibekyessali@hotmail.com
+    # The ACME server URL
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      # Name of a secret used to store the ACME account private key
+      name: letsencrypt-private-key
+    # Add a single challenge solver, HTTP01 using nginx
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
