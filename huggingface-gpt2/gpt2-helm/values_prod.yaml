@@ -1,26 +1,31 @@
 app:
-  replicaCount: 4
+  replicaCount: 2
   env: prod
+  image:
+    repository: fastapi-mlflow-prod
 
 resources:
   limits:
-    cpu: 4
-    memory: 4Gi
+    cpu: 2
+    memory: 2Gi
   requests:
-    cpu: 4
-    memory: 4Gi
+    cpu: 2
+    memory: 2Gi
+
+service:
+  type: LoadBalancer
 
 ingress:
   enabled: true
   hosts:
     host: local-server
     paths:
-      path: /fastapi(/|$)(.*)
+      path: /fastapi/prod(/|$)(.*)
       pathType: ImplementationSpecific
 
 autoscaling:
   enabled: true
-  minReplicas: 4
-  maxReplicas: 10
+  minReplicas: 1
+  maxReplicas: 2
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80

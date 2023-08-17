@@ -44,7 +44,7 @@ spec:
           claimName: mlflow-pvc
       containers:
       - name: gpt2-container
-        image: fastapi-mlflow:v1
+        image: fastapi-mlflow-dev:v1
         imagePullPolicy: Never
         ports:
         - containerPort: 8000
@@ -76,7 +76,7 @@ spec:
     - host: local-server
       http:
         paths:
-        - path: /fastapi(/|$)(.*)
+        - path: /fastapi/dev(/|$)(.*)
           pathType: ImplementationSpecific
           backend:
             service:

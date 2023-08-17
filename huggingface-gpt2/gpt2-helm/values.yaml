@@ -10,11 +10,11 @@ app:
 
 resources:
   limits:
-    cpu: 2
-    memory: 2Gi
+    cpu: 1
+    memory: 1Gi
   requests:
-    cpu: 2
-    memory: 2Gi
+    cpu: 1
+    memory: 1Gi
 
 deployment:
   name: gpt2-deployment
@@ -22,17 +22,11 @@ deployment:
 
 service:
   name: gpt2-service
-  type: LoadBalancer
+  type: NodePort
   port: 8000
 
 ingress:
-  enabled: true
-  hosts:
-    host: local-server
-    paths:
-      path: /fastapi(/|$)(.*)
-      pathType: ImplementationSpecific
-
+  enabled: false
 
 autoscaling:
   enabled: false

@@ -6,7 +6,7 @@ metadata:
   name: gpt2-service
   labels:
     app: gpt2-app
-    env: dev
+    env: prod
 
 spec:
   selector:
@@ -25,10 +25,10 @@ metadata:
   name: gpt2-deployment
   labels:
     app: gpt2-app
-    env: dev
+    env: prod
 
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: gpt2-app
@@ -36,7 +36,7 @@ spec:
     metadata:
       labels:
         app: gpt2-app
-        env: dev
+        env: prod
     spec:
       volumes:
       - name: mlflow-pvc
@@ -44,7 +44,7 @@ spec:
           claimName: mlflow-pvc
       containers:
       - name: gpt2-container
-        image: fastapi-mlflow:v1
+        image: fastapi-mlflow-prod:v1
         imagePullPolicy: Never
         ports:
         - containerPort: 8000
@@ -59,6 +59,23 @@ spec:
             cpu: 2
             memory: 2Gi
 ---
+# Source: gpt2-helm/templates/hpa.yaml
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: gpt2-hpa
+  annotations:
+    app: gpt2-app
+    env: prod
+spec:
+  maxReplicas: 2
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: extensions/v1
+    kind: Deployment
+    name: gpt2-deployment
+  targetCPUUtilizationPercentage: 80
+---
 # Source: gpt2-helm/templates/ingress.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -66,7 +83,7 @@ metadata:
   name: gpt2-ingress
   labels:
     app: gpt2-app
-    env: dev
+    env: prod
   annotations:
     nginx.ingress.kubernetes.io/add-base-url: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
@@ -76,7 +93,7 @@ spec:
     - host: local-server
       http:
         paths:
-        - path: /fastapi(/|$)(.*)
+        - path: /fastapi/prod(/|$)(.*)
           pathType: ImplementationSpecific
           backend:
             service:

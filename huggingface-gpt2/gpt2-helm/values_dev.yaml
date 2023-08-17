@@ -1,0 +1,24 @@
+app:
+  replicaCount: 1
+  env: dev
+  image:
+    repository: fastapi-mlflow-dev
+
+resources:
+  limits:
+    cpu: 2
+    memory: 2Gi
+  requests:
+    cpu: 2
+    memory: 2Gi
+
+service:
+  type: LoadBalancer
+
+ingress:
+  enabled: true
+  hosts:
+    host: local-server
+    paths:
+      path: /fastapi/dev(/|$)(.*)
+      pathType: ImplementationSpecific
