@@ -33,6 +33,11 @@ kubectl apply -k overlays/dev
 
 Access the API documentation in your browser at: http://local-server/fastapi/dev/docs
 
+To stop and remove the application:
+```bash
+kubectl delete -k overlays/dev
+```
+
 ### PRODUCTION ENVIRONMENT
 To view the manifest files for the production environment:
 ```bash
@@ -52,6 +57,11 @@ kubectl apply -k overlays/prod
 ```
 
 Access the API documentation in your browser at: http://local-server/fastapi/prod/docs
+
+To stop and remove the application:
+```bash
+kubectl delete -k overlays/prod
+```
 
 Make sure your Kubernetes cluster and `mlflow-tracking-server` is up and running before applying these configurations.
 

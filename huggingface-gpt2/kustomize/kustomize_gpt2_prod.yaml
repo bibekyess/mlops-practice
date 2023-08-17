@@ -11,7 +11,7 @@ spec:
     targetPort: 8000
   selector:
     name: gpt2-app
-  type: NodePort
+  type: LoadBalancer
 ---
 apiVersion: apps/v1
 kind: Deployment
