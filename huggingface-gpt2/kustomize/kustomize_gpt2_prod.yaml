@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: gpt2-app
+  name: prod-kustom-gpt2-service-v1
+spec:
+  ports:
+  - port: 8000
+    protocol: TCP
+    targetPort: 8000
+  selector:
+    name: gpt2-app
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    name: gpt2-app
+  name: prod-kustom-gpt2-deployment-v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: gpt2-app
+  template:
+    metadata:
+      labels:
+        name: gpt2-app
+    spec:
+      containers:
+      - image: fastapi-mlflow-prod:v1
+        imagePullPolicy: Never
+        name: gpt2-container
+        ports:
+        - containerPort: 8000
+        resources:
+          limits:
+            cpu: 2
+            memory: 2Gi
+          requests:
+            cpu: 2
+            memory: 2Gi
+        volumeMounts:
+        - mountPath: /opt/mlflow/
+          name: mlflow-pvc
+      volumes:
+      - name: mlflow-pvc
+        persistentVolumeClaim:
+          claimName: mlflow-pvc
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: prod-gpt2-hpa
+spec:
+  maxReplicas: 2
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: extensions/v1
+    kind: Deployment
+    name: prod-kustom-gpt2-deployment-v1
+  targetCPUUtilizationPercentage: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/add-base-url: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  labels:
+    name: gpt2-app
+  name: prod-kustom-gpt2-ingress-v1
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: local-server
+    http:
+      paths:
+      - backend:
+          service:
+            name: prod-kustom-gpt2-service-v1
+            port:
+              number: 8000
+        path: /fastapi/prod(/|$)(.*)
+        pathType: ImplementationSpecific

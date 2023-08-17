@@ -1,0 +1,103 @@
+# mlflow-pvc
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mlflow-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+
+# mlflow-pv
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mlflow-pv
+spec:
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /data/mlflow
+---
+
+# deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlflow-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlflow-app
+  template:
+    metadata:
+      labels:
+        app: mlflow-app
+    spec:
+      containers:
+      - name: mlflow-app
+        image: bibekyess/mlops-practice-mlflow:v2 # FIXME: Change with your docker-hub-username/repo-name:tag
+        imagePullPolicy: Never
+        args:
+        - --host=0.0.0.0
+        - --port=5000
+        - --backend-store-uri=/opt/mlflow/backend/
+        - --default-artifact-root=/opt/mlflow/artifacts/
+        - --workers=2
+        # Can also do this: (`--` seperates the command line arguments and is a common convention in docker container)
+          # args: ["--host=0.0.0.0", "--port=5000", "--backend-store-uri=/opt/mlflow/backend/", "--default-artifact-root=/opt/mlflow/artifacts/", "--workers=2"]
+
+        ports:
+        - name: http
+          containerPort: 5000
+          protocol: TCP
+        volumeMounts:
+        - name: mlflow-pvc
+          mountPath: /opt/mlflow/
+      volumes:
+        - name: mlflow-pvc
+          persistentVolumeClaim:
+            claimName: mlflow-pvc
+---
+
+# mlflow-service
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlflow-service
+spec:
+  selector:
+    app: mlflow-app
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+  type: LoadBalancer  # Use "LoadBalancer" type to expose MLflow outside the cluster in Minikube
+---
+
+# mlflow-ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mlflow-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/add-base-url: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: local-server
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: mlflow-service
+            port:
+              number: 5000

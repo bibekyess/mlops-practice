@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gpt2-deployment
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: gpt2-container
+          image: fastapi-mlflow-prod:v1 
+          resources:
+            limits:
+              cpu: 2
+              memory: 2Gi
+            requests:
+              cpu: 2 
+              memory: 2Gi

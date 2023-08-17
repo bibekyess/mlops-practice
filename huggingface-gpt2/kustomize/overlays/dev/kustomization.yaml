@@ -1,0 +1,9 @@
+namePrefix: dev-
+
+resources:
+  - ../../base
+
+patches:
+  - path: ./deployment.yaml
+  - path: ./ingress.yaml
+  - path: ./services.yaml

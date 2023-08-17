@@ -1,0 +1,11 @@
+resources:
+  - gpt2_base.yaml
+
+commonLabels:
+  name: gpt2-app
+
+namePrefix:
+  kustom-
+
+nameSuffix:
+  -v1

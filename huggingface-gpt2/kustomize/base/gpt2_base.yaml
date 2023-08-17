@@ -1,0 +1,50 @@
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gpt2-deployment
+
+spec:
+  replicas: 1
+  template:
+    spec:
+      volumes:
+      - name: mlflow-pvc
+        persistentVolumeClaim:
+          claimName: mlflow-pvc
+      containers:
+      - name: gpt2-container
+        image: fastapi-mlflow:v1
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - name: mlflow-pvc
+          mountPath: /opt/mlflow/
+---
+
+# service
+apiVersion: v1
+kind: Service
+metadata:
+  name: gpt2-service
+spec:
+  selector:
+    name: gpt2-deployment
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+  type: NodePort
+---
+
+# Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gpt2-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/add-base-url: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2 # allows us to rewrite the path of incoming request before forwarding to the backend service
+spec:
+  ingressClassName: nginx

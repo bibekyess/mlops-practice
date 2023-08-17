@@ -1,0 +1,9 @@
+namePrefix: prod-
+
+resources:
+  - ../../base
+  - ./hpa.yaml
+
+patches:
+  - path: ./deployment.yaml
+  - path: ./ingress.yaml

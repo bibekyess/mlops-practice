@@ -3,14 +3,14 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 import mlflow
-# import os
+import os
 
 mlflow.set_tracking_uri("http://local-server")
 
 generator = pipeline('text-generation', model='gpt2')
 
-# app = FastAPI(root_path=os.getenv('ROOT_PATH', ''))
-app = FastAPI(root_path='/fastapi')
+app = FastAPI(root_path=os.getenv('ROOT_PATH', '/fastapi/dev'))
+# app = FastAPI(root_path='/fastapi')
 
 class Body(BaseModel):
     text: str
